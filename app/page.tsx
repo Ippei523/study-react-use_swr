@@ -53,35 +53,33 @@ export default function Home() {
 
   return (
     <div className="todo-container">
-      <h1>Todo App</h1>
+      <h1 className="todo-header">Todo App</h1>
       <div className="todo">
         <div>
-          <p>タイトル</p>
-          <input value={title} onChange={e => setTitle(e.target.value)}/>
+          <p className="todo-label">タイトル</p>
+          <input className="todo-input" value={title} onChange={e => setTitle(e.target.value)}/>
         </div>
         <div>
-          <p>内容</p>
-          <textarea value={content} onChange={e => setContent(e.target.value)} />
+          <p className="todo-label">内容</p>
+          <textarea className="todo-textarea" value={content} onChange={e => setContent(e.target.value)} />
         </div>
-        <button onClick={addTodo}>追加</button>
-        {error !== "" && <p>{error}</p>}
+        <button className="todo-button" onClick={addTodo}>追加</button>
+        {error !== "" && <p className="todo-error">{error}</p>}
 
-        <h2>Todo一覧</h2>
-        {
-          todos.length > 0 && <div className="todo-list">
-            {todos.map((todo, index) => (
-              <div key={index} className='todo-item'>
-                <h2>{index + 1}. {todo.title} </h2>
-                <p>{todo.content}</p>
-                <div>
-                  <button onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
-                  <p>{todo.is_done && "完了"}</p>
-                </div>
+        <h2 className="todo-list-header">Todo一覧</h2>
+        {todos.length > 0 && <div className="todo-list">
+          {todos.map((todo, index) => (
+            <div key={index} className='todo-item'>
+              <h2 className="todo-item-title">{index + 1}. {todo.title} </h2>
+              <p className="todo-item-content">{todo.content}</p>
+              <div className='todo-item-actions'>
+                <button className="todo-edit-button" onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
+                <p className="todo-status">{todo.is_done ? "完了" : "未完"}</p>
               </div>
-            ))}
-          </div>
-        }
-        {todos.length === 0 && <p>Todoがありません</p>}
+            </div>
+          ))}
+        </div>}
+        {todos.length === 0 && <p className="no-todos">Todoがありません</p>}
       </div>
     </div>
   );
