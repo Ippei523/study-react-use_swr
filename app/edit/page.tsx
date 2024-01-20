@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
 import { deleteDoc, getDoc, doc, updateDoc } from 'firebase/firestore'
-import { db } from '../firebase';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Todo } from '../type';
-import { Layout } from '@/components/layout';
+import { db } from '../firebase'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Todo } from '../type'
+import { Layout } from '@/components/layout'
 
 export default function Page() {
   const [todoItem, setTodoItem] = useState<Todo>({
@@ -16,13 +16,13 @@ export default function Page() {
     createdAt: new Date(),
     updatedAt: new Date(),
   })
-  const path = useSearchParams();
-  const specificId = path.get('id');
-  const specificDocRef = doc(db, 'todos', specificId ?? '');
-  const router = useRouter();
+  const path = useSearchParams()
+  const specificId = path.get('id')
+  const specificDocRef = doc(db, 'todos', specificId ?? '')
+  const router = useRouter()
 
   const fetchTodoItem = async () => {
-    const querySnapshot = await getDoc(specificDocRef);
+    const querySnapshot = await getDoc(specificDocRef)
     const _todoItem = {
       id: querySnapshot.id,
       title: querySnapshot.data()?.title,
@@ -110,5 +110,5 @@ export default function Page() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }

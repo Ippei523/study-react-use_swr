@@ -1,18 +1,18 @@
-'use client';
-import { useRouter } from 'next/navigation';
+'use client'
+import { useRouter } from 'next/navigation'
 import { SetStateAction, useEffect, useState } from 'react'
 import { addDoc, collection, query, orderBy, getDocs } from 'firebase/firestore'
-import { db } from './firebase';
-import { Todo } from './type';
-import { Layout } from '@/components/layout';
-import { TodoForm } from '@/components/todoForm';
+import { db } from './firebase'
+import { Todo } from './type'
+import { Layout } from '@/components/layout'
+import { TodoForm } from '@/components/todoForm'
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [error, setError] = useState('')
-  const router = useRouter();
+  const router = useRouter()
 
   const addTodo = async () => {
     if (!title || !content) {
@@ -36,8 +36,8 @@ export default function Home() {
   }
 
   const fetchTodos = async () => {
-    const q = query(collection(db, 'todos'), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
+    const q = query(collection(db, 'todos'), orderBy('createdAt', 'desc'))
+    const querySnapshot = await getDocs(q)
     const _todos = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       title: doc.data().title,
@@ -51,7 +51,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchTodos()
-  }, []);
+  }, [])
 
   return (
     <Layout>
@@ -87,5 +87,5 @@ export default function Home() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }
