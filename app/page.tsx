@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { SetStateAction, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { addDoc, collection, query, orderBy, getDocs } from 'firebase/firestore'
 import { db } from './firebase'
 import { Todo } from './type'
