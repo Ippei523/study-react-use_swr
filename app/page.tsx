@@ -1,9 +1,11 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { addDoc, collection, query, orderBy, getDocs } from 'firebase/firestore'
 import { db } from './firebase';
 import { Todo } from './type';
+import { Layout } from '@/components/layout';
+import { TodoForm } from '@/components/todoForm';
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([])
@@ -52,35 +54,38 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="todo-container">
-      <h1 className="todo-header">Todo App</h1>
-      <div className="todo">
-        <div>
-          <p className="todo-label">タイトル</p>
-          <input className="todo-input" value={title} onChange={e => setTitle(e.target.value)}/>
-        </div>
-        <div>
-          <p className="todo-label">内容</p>
-          <textarea className="todo-textarea" value={content} onChange={e => setContent(e.target.value)} />
-        </div>
-        <button className="todo-button" onClick={addTodo}>追加</button>
-        {error !== "" && <p className="todo-error">{error}</p>}
+    <Layout>
+      <div className="todo-container">
+        <h1 className="todo-header">Todo App</h1>
+        <div className="todo">
+          <TodoForm
+            title={title}
+            setTitle={setTitle}
+            content={content}
+            setContent={setContent}
+            error={error}
+            setError={setError}
+            addTodo={addTodo}
+          />
 
-        <h2 className="todo-list-header">Todo一覧</h2>
-        {todos.length > 0 && <div className="todo-list">
-          {todos.map((todo, index) => (
-            <div key={index} className='todo-item'>
-              <h2 className="todo-item-title">{index + 1}. {todo.title} </h2>
-              <p className="todo-item-content">{todo.content}</p>
-              <div className='todo-item-actions'>
-                <button className="todo-edit-button" onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
-                <p className="todo-status">{todo.is_done ? "完了" : "未完"}</p>
-              </div>
-            </div>
-          ))}
-        </div>}
-        {todos.length === 0 && <p className="no-todos">Todoがありません</p>}
+          <h2 className="todo-list-header">Todo一覧</h2>
+          <table className="todo-table">
+            <tbody>
+              {todos.map((todo, index) => (
+                <tr key={index}>
+                  <td>{todo.title}</td>
+                  <td className='todo-content'>{todo.content}</td>
+                  <td className='todo-item-actions'>
+                    <button className="todo-edit-button" onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
+                    <p className="todo-status">{todo.is_done ? "完了" : "未完"}</p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {todos.length === 0 && <p className="no-todos">Todoがありません</p>}
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
