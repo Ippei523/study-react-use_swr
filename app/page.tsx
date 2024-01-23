@@ -1,18 +1,24 @@
 'use client'
+
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { addDoc, collection, query, orderBy, getDocs } from 'firebase/firestore'
+import { addDoc, collection } from 'firebase/firestore'
 import { db } from './firebase'
 import { Todo } from './type'
 import { Layout } from '@/components/layout'
 import { TodoForm } from '@/components/todoForm'
+import { useGetFirestoreAllData } from '@/hooks/firestore'
+import { useSWRConfig } from 'swr'
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [todoList, setTodoList] = useState<Todo[]>([])
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
+  const { cache } = useSWRConfig()
+
+  const { data, isLoading, isError } = useGetFirestoreAllData()
 
   const addTodo = async () => {
     if (!title || !content) {
@@ -31,27 +37,15 @@ export default function Home() {
     setTitle('')
     setContent('')
     setError('')
-
-    fetchTodos()
-  }
-
-  const fetchTodos = async () => {
-    const q = query(collection(db, 'todos'), orderBy('createdAt', 'desc'))
-    const querySnapshot = await getDocs(q)
-    const _todos = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      title: doc.data().title,
-      content: doc.data().content,
-      is_done: doc.data().is_done,
-      createdAt: doc.data().createdAt.toDate(),
-      updatedAt: doc.data().updatedAt.toDate(),
-    }))
-    setTodos(_todos)
   }
 
   useEffect(() => {
-    fetchTodos()
-  }, [])
+    if (!data) return
+    setTodoList(data)
+  }, [cache, data])
+
+  if (isLoading) return <p>loading...</p>
+  if (isError) return <p>{isError}</p>
 
   return (
     <Layout>
@@ -69,21 +63,23 @@ export default function Home() {
           />
 
           <h2 className="todo-list-header">Todo一覧</h2>
-          <table className="todo-table">
-            <tbody>
-              {todos.map((todo, index) => (
-                <tr key={index}>
-                  <td>{todo.title}</td>
-                  <td className='todo-content'>{todo.content}</td>
-                  <td className='todo-item-actions'>
-                    <button className="todo-edit-button" onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
-                    <p className="todo-status">{todo.is_done ? "完了" : "未完"}</p>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {todos.length === 0 && <p className="no-todos">Todoがありません</p>}
+          {
+            todoList.length > 0 && <table className="todo-table">
+              <tbody>
+                {todoList?.map((todo, index) => (
+                  <tr key={index}>
+                    <td>{todo.title}</td>
+                    <td className='todo-content'>{todo.content}</td>
+                    <td className='todo-item-actions'>
+                      <button className="todo-edit-button" onClick={() => {router.push(`/edit?id=${todo.id}`)}}>編集</button>
+                      <p className="todo-status">{todo.is_done ? "完了" : "未完"}</p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          }
+          {todoList?.length === 0 && <p className="no-todos">Todoがありません</p>}
         </div>
       </div>
     </Layout>
