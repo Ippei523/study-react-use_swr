@@ -2,11 +2,10 @@
 
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import { useGetFirestoreData } from '@/hooks/firestore'
-import { useSWRConfig } from 'swr'
 
 export default function Page() {
   const path = useSearchParams()
@@ -14,7 +13,6 @@ export default function Page() {
   const specificDocRef = doc(db, 'todos', specificId ?? '')
   const router = useRouter()
   const { data, isLoading, isError } = useGetFirestoreData(specificId ?? '')
-  const { cache } = useSWRConfig();
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isDone, setIsDone] = useState(false)
